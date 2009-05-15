@@ -56,7 +56,10 @@ def strip_wiki_markup(text):
     text = strip_markup(text)
     text = strip_info(text)
     text = strip_links(text)
-    return text
+
+    meta_data = [ ('key-word', ['first']), ("category", ['pierwsza', 'druga', 'trzecia']) ]
+
+    return meta_data, text
 
 if __name__ == "__main__":
 #    print strip_wiki_markup(corpus.poland)

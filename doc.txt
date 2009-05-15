@@ -1,0 +1,10 @@
+
+
+plik test.xml - zawiera wycinek z zrzutu bazy wiedzy wikipedii
+plik update_test.xml - zawiera ten sam fragment wikipedi ale z pewnymi modyfikacjami.
+
+zmiany:
+	id 37, archeologia, revision 15565298 zmiana na 15565299 oraz zmieniona zostala tresc
+	id 71, Wieloprocesorowość asynchroniczna, revison 10910940 ma 10910941 oraz zmieniona tresc
+
+

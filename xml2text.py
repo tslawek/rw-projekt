@@ -5,8 +5,13 @@ import sys, traceback
 import os
 import re
 import string
+
+
+from ConfigParser import *
+from parser  import *
+
 start_path = os.curdir
-path = "txt"
+path = "txt3"
 subdir_name_size = 2
 zfill_size = 3
 
@@ -69,6 +74,24 @@ def create_file(name, content):
 	out.write(content.encode('utf-8'))
 	out.close()
 
+def add_to_file(name, meta, text):
+
+	
+	f = open(name, "a")
+	append_text = "\n"
+	for meta_data in meta:
+		meta_value = "::".join(meta_data[1])
+		append_text += "$$"+meta_data[0]+":::" + meta_value + "$$\n"
+	append_text += text
+	append_text += "\n#####"
+
+
+	f.write(append_text)
+	f.close()
+	
+
+
+
 def create_file_name(*args):
 	def st(arg):
 		if isinstance(arg, int):
@@ -83,7 +106,24 @@ def test_parser(content):
 	print "c"
 	return content
 
+
+def wiki_parser(content):
+
+	return ("", "")
+
 def convert(infile, parser, force):
+
+	cp = ConfigParser()
+	cp.read('config.conf')
+
+	options = {}
+	for i in cp.items('Parser'):
+		options[i[0]] = i[1]
+
+	
+
+	wikiparser = WikiParser(options)
+
 
 	context = etree.iterparse(infile, events=("end",), tag='{http://www.mediawiki.org/xml/export-0.3/}text')
 	counter, error_counter, update_counter = 0,0, 0
@@ -103,8 +143,9 @@ def convert(infile, parser, force):
 			#update or create file
 			if force:
 			
-				content = parser(text.text)
-				create_file(file_name, content)
+				meta_dane, content = wikiparser.parse(title, text.text)
+			#	create_file(file_name, content)
+				add_to_file("wyniki.txt", meta_dane, content)
 			else:
 				if need_update(file_name):
 					content = parser(text.text)
@@ -131,4 +172,5 @@ def convert(infile, parser, force):
 
 
 if __name__ == "__main__":
-	convert(sys.argv[1], test_parser, True)
+	
+	convert(sys.argv[1], wiki_parser, True)
