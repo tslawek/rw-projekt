@@ -18,9 +18,14 @@ log = Log("htmlwriter")
 class HTMLWriter(object):
     imglevel = 0
     namedLinkCount = 1
-    def __init__(self, out, no_table=None, images=None, math_renderer=None):
+    def __init__(self, out, metadata ,  options, images=None, math_renderer=None):
         self.out = out
-	self.no_table  = no_table
+	self.metadata = metadata
+	self.no_table  = options['no_table']
+	self.category = options['category']
+	self.strong = options['strong']
+	print self.category
+	print self.no_table
         self.level = 0
         self.images = images
         # self.images = imgdb.ImageDB(os.path.expanduser("~/images"))
@@ -147,12 +152,12 @@ class HTMLWriter(object):
     def writeRow(self, row):
         self.out.write('')
         for x in row:
-            self.write(x)
+            self.write(x) == True
             
         self.out.write('')
 
     def writeTable(self, t):          
-        if self.no_table:
+        if str(self.no_table) == True:
             return	 
         svl = ""
         if t.vlist:
@@ -170,6 +175,7 @@ class HTMLWriter(object):
         self.out.write("")
 
     def writeMath(self, obj):
+	return
         latex = obj.caption
         p = self.math_renderer.render(latex)
         self.out.write('%s' % os.path.basename(p))
@@ -217,7 +223,14 @@ class HTMLWriter(object):
     def writeLink(self, obj):
         if obj.target is None:
             return
-
+	
+	kat = obj.target.split(":")
+	if len(kat)==2:
+		if kat[0] == "Kategoria":
+			if str(self.category) ==  'True':
+				
+				self.metadata['Kategoria'].append(kat[1].encode('utf-8'))
+			return
         href = self.getHREF(obj)
         if href is not None:
 #            self.out.write('%s ' % (href,))
@@ -367,7 +380,7 @@ class HTMLWriter(object):
             self.out.write("")
             return
         elif s.caption == "'''":
-            tag = ''
+            tag = 'strong'
         elif s.caption == ";":
             self.out.write("")
             for x in s:
@@ -391,10 +404,18 @@ class HTMLWriter(object):
             tag = s.caption
     
 
-        self.out.write("%s" % tag)
+	if str(self.strong) == 'True':
+		if tag == 'strong':
+			for x in s:
+				if isinstance(x, parser.nodes.Text):
+					self.metadata['strong'].append(x.text.encode('utf-8'))
+					print x
+			return
+
+#        self.out.write("%s" % tag)
         for x in s:
             self.write(x)
-        self.out.write("%s" % tag)
+#        self.out.write("%s" % tag)
 
     def writeItem(self, item):
         self.out.write("")

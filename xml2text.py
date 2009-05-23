@@ -62,6 +62,15 @@ def need_update(name):
 		return True
 
 
+def read_configuration(file_name, section):
+	
+	cp = ConfigParser()
+	cp.read(file_name)
+
+	#options = {}
+	#for i in cp.items('Parser'):
+	#	options[i[0]] = i[1]
+	return dict(cp.items(section))
 
 
 def create_file(name, content):
@@ -74,16 +83,22 @@ def create_file(name, content):
 	out.write(content.encode('utf-8'))
 	out.close()
 
-def add_to_file(name, meta, text):
 
-	
+
+def add_to_file(name, metadata, text):
+
+	tags = read_configuration('config.conf', 'Tags')	
+
 	f = open(name, "a")
 	append_text = "\n"
-	for meta_data in meta:
-		meta_value = "::".join(meta_data[1])
-		append_text += "$$"+meta_data[0]+":::" + meta_value + "$$\n"
+
+
+	for key in metadata.keys():
+		meta_value = tags['metavalue_sep'].join(metadata[key])
+		append_text += tags['metadata']+key+ tags['metakey_sep'] + meta_value + tags['metadata'] +"\n"
 	append_text += text
-	append_text += "\n#####"
+	append_text += "\n"+ tags['separator']
+
 
 
 	f.write(append_text)
@@ -113,14 +128,7 @@ def wiki_parser(content):
 
 def convert(infile, parser, force):
 
-	cp = ConfigParser()
-	cp.read('config.conf')
-
-	options = {}
-	for i in cp.items('Parser'):
-		options[i[0]] = i[1]
-
-	
+	options = read_configuration('config.conf', 'Parser')
 
 	wikiparser = WikiParser(options)
 
@@ -142,10 +150,10 @@ def convert(infile, parser, force):
 			file_name = create_file_name(string.zfill(id, zfill_size), revision, title)
 			#update or create file
 			if force:
-			
-				meta_dane, content = wikiparser.parse(title, text.text)
+				print "File: %s" % (title, )	
+				meta_data, content = wikiparser.parse(title, text.text)
 			#	create_file(file_name, content)
-				add_to_file("wyniki.txt", meta_dane, content)
+				add_to_file("wyniki2.txt", meta_data, content)
 			else:
 				if need_update(file_name):
 					content = parser(text.text)
