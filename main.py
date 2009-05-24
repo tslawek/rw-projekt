@@ -64,7 +64,10 @@ def strip_wiki_markup(text):
 if __name__ == "__main__":
 #    print strip_wiki_markup(corpus.poland)
     if len(sys.argv) < 2:
-        print "usage: main.py wiki.xml"
+        print "usage: main.py test.xml"
     else:
+					# parser jest nie potrzebny
         xml2text.convert(sys.argv[1], strip_wiki_markup, True)
-
+	import finder
+	finder.demo()
+	

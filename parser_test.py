@@ -5,11 +5,12 @@ import sys
 import StringIO
 from corpus import poland
 from corpus import gim
+from corpus import ascii
 from mwlib import parser
 from mwlib.dummydb import DummyDB
 from mwlib.uparser import parseString
 import my_htmlwriter as htmlwriter
-
+import re
 from collections import defaultdict
 t = """
 
@@ -29,6 +30,17 @@ a = """	[[BR]]Ala ma kota
 asdasdad
 {|dasda|}"""
 
+
+
+def clean_blank_line(text):
+	"""	ret = ""
+	for linie in text.splitlines():
+		if linie != "":
+			ret += linie
+
+	return ret
+	"""
+	return re.sub("\n\n\n", '', text)
 
 def writemetadata(metadata):
 
@@ -59,12 +71,12 @@ def main(name):
 	r = parseString(title='x', raw=input, wikidb=db)
 #	parser.show(sys.stdout, r)	
 	metadata = defaultdict(list)
-	w = htmlwriter.HTMLWriter(out, metadata,  {'no_table':True, 'category' : True})
+	w = htmlwriter.HTMLWriter(out, metadata,  {'no_table':True, 'category' : True, 'strong' : True})
 	print	w.getCategoryList(r)
 	w.write(r)
 	
 	print metadata
-	print out.getvalue()
+	print clean_blank_line(out.getvalue())
 
 	print "tu"
 	print writemetadata(metadata)	
@@ -73,3 +85,4 @@ def main(name):
 if __name__ == "__main__":
 #	main(poland)
 	main(t)
+	main(ascii)

@@ -5,11 +5,11 @@ import sys, traceback
 import os
 import re
 import string
-
+import re
 
 from ConfigParser import *
 from parser  import *
-
+from configuration import *
 start_path = os.curdir
 path = "txt3"
 subdir_name_size = 2
@@ -62,15 +62,9 @@ def need_update(name):
 		return True
 
 
-def read_configuration(file_name, section):
-	
-	cp = ConfigParser()
-	cp.read(file_name)
+def clean_blnak_lines(text):
+	return re.sub("\n\n", "", text)
 
-	#options = {}
-	#for i in cp.items('Parser'):
-	#	options[i[0]] = i[1]
-	return dict(cp.items(section))
 
 
 def create_file(name, content):
@@ -87,7 +81,7 @@ def create_file(name, content):
 
 def add_to_file(name, metadata, text):
 
-	tags = read_configuration('config.conf', 'Tags')	
+	tags = read_configuration('Tags')	
 
 	f = open(name, "a")
 	append_text = "\n"
@@ -128,7 +122,7 @@ def wiki_parser(content):
 
 def convert(infile, parser, force):
 
-	options = read_configuration('config.conf', 'Parser')
+	options = read_configuration('Parser')
 
 	wikiparser = WikiParser(options)
 
@@ -152,8 +146,9 @@ def convert(infile, parser, force):
 			if force:
 				print "File: %s" % (title, )	
 				meta_data, content = wikiparser.parse(title, text.text)
+				meta_data['title'].append(title.encode('utf-8'))
 			#	create_file(file_name, content)
-				add_to_file("wyniki2.txt", meta_data, content)
+				add_to_file(read_configuration('Return')['name'], meta_data, clean_blnak_lines(content))
 			else:
 				if need_update(file_name):
 					content = parser(text.text)

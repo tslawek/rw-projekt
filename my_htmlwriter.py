@@ -83,9 +83,9 @@ class HTMLWriter(object):
 
     def writeSection(self, obj):
         header = "%s" % (obj.level)
-        self.out.write("")
+        #self.out.write("")
         self.write(obj.children[0])
-        self.out.write("")
+        #self.out.write("")
                 
         self.level += 1
         for x in obj.children[1:]:
@@ -93,10 +93,10 @@ class HTMLWriter(object):
         self.level -= 1
 
     def writePreFormatted(self, n):
-        self.out.write("")
+        #self.out.write("")
         for x in n:
             self.write(x)
-        self.out.write("")
+        #self.out.write("")
         
     def writeNode(self, n):
         for x in n:
@@ -110,13 +110,14 @@ class HTMLWriter(object):
         self.out.write('%s' % svl)
         for x in cell:
             self.write(x)
-        self.out.write("")
+        #self.out.write("")
 
     def writeCaption(self, t):
+	pass
 	self.out.write("")
 
     def writeTagNode(self, t):
-	self.out.write("")
+	#self.out.write("")
 	return
         if t.caption == 'ref':
             self.references.append(t)
@@ -126,13 +127,13 @@ class HTMLWriter(object):
             if not self.references:
                 return
 
-            self.out.write("")
+            #self.out.write("")
             for r in self.references:
-                self.out.write("")
+                #self.out.write("")
                 for x in r:                    
                     self.write(x)
-                self.out.write("")
-            self.out.write("")
+                #self.out.write("")
+            #self.out.write("")
                            
             self.references = []            
             return
@@ -157,7 +158,7 @@ class HTMLWriter(object):
         self.out.write('')
 
     def writeTable(self, t):          
-        if str(self.no_table) == True:
+        if str(self.no_table) == 'True':
             return	 
         svl = ""
         if t.vlist:
@@ -167,12 +168,12 @@ class HTMLWriter(object):
             
         self.out.write("%s " % svl)
         if t.caption:
-            self.out.write("")
+            #self.out.write("")
             self.write(t.caption)
-            self.out.write("")
+            #self.out.write("")
         for x in t:
             self.write(x)
-        self.out.write("")
+        #self.out.write("")
 
     def writeMath(self, obj):
 	return
@@ -234,7 +235,8 @@ class HTMLWriter(object):
         href = self.getHREF(obj)
         if href is not None:
 #            self.out.write('%s ' % (href,))
-            self.out.write("")
+            #self.out.write("")
+		pass
         else:
             self.out.write('')
         if obj.children:
@@ -243,7 +245,7 @@ class HTMLWriter(object):
         else:
             self._write(obj.target)
             
-        self.out.write("")
+#        self.out.write("")
 
     writeArticleLink = writeLink
 
@@ -361,31 +363,31 @@ class HTMLWriter(object):
 
     def writeArticle(self, a):
         if a.caption:
-            self.out.write("")
+ #           self.out.write("")
             self._write(a.caption)
-            self.out.write("")
+  #          self.out.write("")
             
         for x in a:
             self.write(x)
 
-        self.out.write("\n")
+   #     self.out.write("")
         
     def writeStyle(self, s):
         if s.caption == "''": 
             tag = ''
         elif s.caption=="'''''":
-            self.out.write("")
+    #        self.out.write("")
             for x in s:
                 self.write(x)
-            self.out.write("")
+     #       self.out.write("")
             return
         elif s.caption == "'''":
             tag = 'strong'
         elif s.caption == ";":
-            self.out.write("")
+            #self.out.write("")
             for x in s:
                 self.write(x)
-            self.out.write("")
+            #self.out.write("")
             return
         
         elif s.caption.startswith(":"):
@@ -418,7 +420,7 @@ class HTMLWriter(object):
 #        self.out.write("%s" % tag)
 
     def writeItem(self, item):
-        self.out.write("")
+        #self.out.write("")
         for x in item:
             self.write(x)
         self.out.write("\n")
