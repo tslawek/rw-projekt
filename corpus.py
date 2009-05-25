@@ -1,4 +1,363 @@
 #ecoding=utf-8
+
+ascii = """
+'''ASCII''' [aski] ([[język angielski|ang.]] ''American Standard Code for Information Interchange'') - 7-[[bit]]owy [[kod]] przyporządkowujący [[liczba|liczby]] z zakresu 0-127 [[litera|literom]] (alfabetu angielskiego), [[cyfra|cyfrom]], [[znak przestankowy|znakom przestankowym]] i innym [[symbol]]om oraz poleceniom sterującym. Przykładowo litera &quot;a&quot; jest kodowana liczbą 97, a polecenie &quot;powrót karetki&quot; – liczbą 13.
+
+Litery, cyfry oraz inne znaki drukowane tworzą zbiór znaków ASCII. Jest to 95 znaków o kodach 32-126. Pozostałe 33 kody (0-31 i 127) to tzw. [[kod sterujący|kody sterujące]] służące do sterowania [[urządzenie]]m odbierającym komunikat, np. [[drukarka|drukarką]] czy [[terminal komputerowy|terminal]]em.
+
+Ponieważ kod ASCII jest 7-[[bit]]owy, a większość [[komputer|komputerów]] operuje na 8-bitowych [[bajt (informatyka)|bajtach]], dodatkowy bit można wykorzystać na powiększenie zbioru kodowanych znaków. Powstało wiele różnych rozszerzeń ASCII wykorzystujących ósmy bit (np. norma [[ISO 8859]], rozszerzenia firm [[IBM]] lub [[Microsoft Corporation|Microsoft]]), nazywanych [[strona kodowa|stronami kodowymi]]. Również kodowanie [[UTF-8]] można uważać za rozszerzenie ASCII, tutaj jednak dodatkowe znaki są kodowane na 2 i więcej bajtach.
+
+{| border=0
+|
+{| class=wikitable
+|-align=center
+! Dec || Hex || Znak || Skrót
+|-align=center
+| 0 || 00 || Null || NUL
+|-align=center
+| 1 || 01 || Start Of Heading || SOH
+|-align=center
+| 2 || 02 || Start of Text || STX
+|-align=center
+| 3 || 03 || End of Text || ETX
+|-align=center
+| 4 || 04 || End of Transmission || EOT
+|-align=center
+| 5 || 05 || Enquiry || ENQ
+|-align=center
+| 6 || 06 || Acknowledge || ACK
+|-align=center
+| 7 || 07 || Bell || BEL
+|-align=center
+| 8 || 08 || Backspace || BS
+|-align=center
+| 9 || 09 || Horizontal Tab || HT
+|-align=center
+| 10 || 0A || Line Feed || LF
+|-align=center
+| 11 || 0B || Vertical Tab || VT
+|-align=center
+| 12 || 0C || Form Feed || FF
+|-align=center
+| 13 || 0D || Carriage Return || CR
+|-align=center
+| 14 || 0E || Shift Out || SO
+|-align=center
+| 15 || 0F || Shift In || SI
+|-align=center
+| 16 || 10 || Data Link Escape || DLE
+|-align=center
+| 17 || 11 || Device Control 1 (XON) || DC1
+|-align=center
+| 18 || 12 || Device Control 2 || DC2
+|-align=center
+| 19 || 13 || Device Control 3 (XOFF) || DC3
+|-align=center
+| 20 || 14 || Device Control 4 || DC4
+|-align=center
+| 21 || 15 || Negative Acknowledge || NAK
+|-align=center
+| 22 || 16 || Synchronous Idle || SYN
+|-align=center
+| 23 || 17 || End of Transmission Block  || ETB
+|-align=center
+| 24 || 18 || Cancel || CAN
+|-align=center
+| 25 || 19 || End of Medium || EM
+|-align=center
+| 26 || 1A|| Substitute || SUB
+|-align=center
+| 27 || 1B || Escape || ESC
+|-align=center
+| 28 || 1C || File Separator || FS
+|-align=center
+| 29 || 1D || Group Separator || GS
+|-align=center
+| 30 || 1E || Record Separator || RS
+|-align=center
+| 31 || 1F || Unit Separator || US
+|}
+| &amp;nbsp; &amp;nbsp;
+|
+{| class=wikitable
+|-align=center
+! Dec || Hex || Znak
+|-align=center
+| 32 || 20 || Spacja
+|-align=center
+| 33 || 21 || !
+|-align=center
+| 34 || 22 || &quot;
+|-align=center
+| 35 || 23 || #
+|-align=center
+| 36 || 24 || $
+|-align=center
+| 37 || 25 || %
+|-align=center
+| 38 || 26 || &amp;
+|-align=center
+| 39 || 27 || '
+|-align=center
+| 40 || 28 || (
+|-align=center
+| 41 || 29 || )
+|-align=center
+| 42 || 2A || *
+|-align=center
+| 43 || 2B || +
+|-align=center
+| 44 || 2C || ,
+|-align=center
+| 45 || 2D || -
+|-align=center
+| 46 || 2E || .
+|-align=center
+| 47 || 2F || /
+|-align=center
+| 48 || 30 || 0
+|-align=center
+| 49 || 31 || 1
+|-align=center
+| 50 || 32 || 2
+|-align=center
+| 51 || 33 || 3
+|-align=center
+| 52 || 34 || 4
+|-align=center
+| 53 || 35 || 5
+|-align=center
+| 54 || 36 || 6
+|-align=center
+| 55 || 37 || 7
+|-align=center
+| 56 || 38 || 8
+|-align=center
+| 57 || 39 || 9
+|-align=center
+| 58 || 3A || :
+|-align=center
+| 59 || 3B || ;
+|-align=center
+| 60 || 3C || &lt;
+|-align=center
+| 61 || 3D || =
+|-align=center
+| 62 || 3E || &gt;
+|-align=center
+| 63 || 3F || ?
+|}
+| &amp;nbsp; &amp;nbsp;
+|
+{| class=wikitable
+|-align=center
+! Dec || Hex || Znak
+|-align=center
+| 64 || 40 || @
+|-align=center
+| 65 || 41 || A
+|-align=center
+| 66 || 42 || B
+|-align=center
+| 67 || 43 || C
+|-align=center
+| 68 || 44 || D
+|-align=center
+| 69 || 45 || E
+|-align=center
+| 70 || 46 || F
+|-align=center
+| 71 || 47 || G
+|-align=center
+| 72 || 48 || H
+|-align=center
+| 73 || 49 || I
+|-align=center
+| 74 || 4A || J
+|-align=center
+| 75 || 4B || K
+|-align=center
+| 76 || 4C || L
+|-align=center
+| 77 || 4D || M
+|-align=center
+| 78 || 4E || N
+|-align=center
+| 79 || 4F || O
+|-align=center
+| 80 || 50 || P
+|-align=center
+| 81 || 51 || Q
+|-align=center
+| 82 || 52 || R
+|-align=center
+| 83 || 53 || S
+|-align=center
+| 84 || 54 || T
+|-align=center
+| 85 || 55 || U
+|-align=center
+| 86 || 56 || V
+|-align=center
+| 87 || 57 || W
+|-align=center
+| 88 || 58 || X
+|-align=center
+| 89 || 59 || Y
+|-align=center
+| 90 || 5A || Z
+|-align=center
+| 91 || 5B || [
+|-align=center
+| 92 || 5C || \
+|-align=center
+| 93 || 5D || ]
+|-align=center
+| 94 || 5E || ^
+|-align=center
+| 95 || 5F || _
+|}
+| &amp;nbsp; &amp;nbsp;
+|
+{| class=wikitable
+|-align=center
+! Dec || Hex || Znak || Skrót
+|-align=center
+| 96 || 60 || `
+|-align=center
+| 97 || 61 || a
+|-align=center
+| 98 || 62 || b
+|-align=center
+| 99 || 63 || c
+|-align=center
+| 100 || 64 || d
+|-align=center
+| 101 || 65 || e
+|-align=center
+| 102 || 66 || f
+|-align=center
+| 103 || 67 || g
+|-align=center
+| 104 || 68 || h
+|-align=center
+| 105 || 69 || i
+|-align=center
+| 106 || 6A || j
+|-align=center
+| 107 || 6B || k
+|-align=center
+| 108 || 6C || l
+|-align=center
+| 109 || 6D || m
+|-align=center
+| 110 || 6E || n
+|-align=center
+| 111 || 6F || o
+|-align=center
+| 112 || 70 || p
+|-align=center
+| 113 || 71 || q
+|-align=center
+| 114 || 72 || r
+|-align=center
+| 115 || 73 || s
+|-align=center
+| 116 || 74 || t
+|-align=center
+| 117 || 75 || u
+|-align=center
+| 118 || 76 || v
+|-align=center
+| 119 || 77 || w
+|-align=center
+| 120 || 78 || x
+|-align=center
+| 121 || 79 || y
+|-align=center
+| 122 || 7A || z
+|-align=center
+| 123 || 7B || {
+|-align=center
+| 124 || 7C || &amp;#124;
+|-align=center
+| 125 || 7D || }
+|-align=center
+| 126 || 7E || ~
+|-align=center
+| 127 || 7F || Delete || DEL
+|}
+|}
+
+== Zobacz też ==
+* [[ISO/IEC 646]], [[ISO 8859]], [[Unicode]], [[EBCDIC]], [[Windows-1250]]
+* [[ASCII-Art]]
+
+{{Link FA|en}}
+{{Link FA|es}}
+
+[[Kategoria:Formaty plików komputerowych]]
+[[Kategoria:Kodowania znaków]]
+
+[[als:ASCII]]
+[[ar:آسكي]]
+[[ast:ASCII]]
+[[bn:অ্যাস্‌কি]]
+[[zh-min-nan:ASCII]]
+[[bs:ASCII]]
+[[bg:ASCII]]
+[[ca:ASCII]]
+[[cs:ASCII]]
+[[da:ASCII]]
+[[de:American Standard Code for Information Interchange]]
+[[et:ASCII]]
+[[el:ASCII]]
+[[en:ASCII]]
+[[es:ASCII]]
+[[eo:Askio]]
+[[eu:ASCII]]
+[[fa:اسکی (استاندارد)]]
+[[fr:American Standard Code for Information Interchange]]
+[[ga:ASCII]]
+[[gl:ASCII]]
+[[ko:아스키 코드]]
+[[hr:ASCII]]
+[[id:ASCII]]
+[[ia:ASCII]]
+[[it:ASCII]]
+[[he:ASCII]]
+[[ku:ASCII]]
+[[lv:ASCII]]
+[[lb:American Standard Code for Information Interchange]]
+[[lt:ASCII]]
+[[hu:ASCII]]
+[[ms:ASCII]]
+[[nl:ASCII (tekenset)]]
+[[ja:ASCII]]
+[[no:ASCII]]
+[[nn:ASCII]]
+[[nds:ASCII]]
+[[pt:ASCII]]
+[[ksh:ASCII]]
+[[ro:ASCII]]
+[[ru:ASCII]]
+[[sco:ASCII]]
+[[sq:ASCII]]
+[[simple:ASCII]]
+[[sk:ASCII]]
+[[sl:ASCII]]
+[[sr:ASCII]]
+[[fi:ASCII]]
+[[sv:ASCII]]
+[[kab:ASCII]]
+[[th:แอสกี]]
+[[vi:ASCII]]
+[[tr:ASCII]]
+[[uk:ASCII]]
+[[ur:امریکی معیاری رمز براۓ اطلاعاتی تبادلہ]]
+[[zh:ASCII]]
+"""
+
 poland = """
 {{DisambigR|państwa|inne znaczenia słowa '''[[Polska (ujednoznacznienie)|Polska]]'''. Na tę stronę wskazuje również przekierowanie z '''RP''', zobacz też '''[[Rzeczpospolita Polska]]'''}}
 {{Państwo infobox

@@ -1,7 +1,8 @@
 #ecoding=utf-8
 
-import re
+import re,sys
 import corpus
+import xml2text
 
 def localesub(pattern, replacement, string):
     pattern = re.compile(pattern, re.LOCALE)
@@ -59,7 +60,18 @@ def strip_wiki_markup(text):
     text = strip_markup(text)
     text = strip_info(text)
     text = strip_links(text)
-    return text
+
+    meta_data = [ ('key-word', ['first']), ("category", ['pierwsza', 'druga', 'trzecia']) ]
+
+    return meta_data, text
 
 if __name__ == "__main__":
-    print strip_wiki_markup(corpus.poland)
+#    print strip_wiki_markup(corpus.poland)
+    if len(sys.argv) < 2:
+        print "usage: main.py test.xml"
+    else:
+					# parser jest nie potrzebny
+        xml2text.convert(sys.argv[1], strip_wiki_markup, True)
+	import finder
+	finder.demo()
+	
