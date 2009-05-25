@@ -16,6 +16,8 @@ def test_strip_info():
     assert strip_info("jeden [[link]]") == "jeden [[link]]"
     assert strip_info("jeden [[link]] dwa") == "jeden [[link]] dwa"
     assert strip_info("jeden [[link]] [[Kategoria:Polacy]] dwa") == "jeden [[link]]  dwa"
+    assert strip_info("[[Plik:Pierogi frying.jpg|thumb|246px|Pierogi]]") == ""
+    
 
 def strip_info(text):
     return localesub(r"\[\[[^\[\]]+:[^\[\]]+\]\]", "", text)
@@ -33,11 +35,13 @@ def strip_links(text):
 def test_strip_markup():
     assert strip_markup("'''asdf'''") == "asdf"
     assert strip_markup("* asdf") == "asdf"
+    assert strip_markup("jeden {{ adsf \n asdf \n }} dwa") == "jeden  dwa"
     _in = """* Albin Janusz, ''"Polski ruch narodowy na Łotwie w latach 1919-40"'', [[Wrocław]] [[1993]], ISBN 83-229-0901-2"""
     out = """Albin Janusz, "Polski ruch narodowy na Łotwie w latach 1919-40", [[Wrocław]] [[1993]], ISBN 83-229-0901-2"""
     assert strip_markup(_in) == out
 
 def strip_markup(text):
+    text = re.sub(re.compile("{{[^}}]+}}", re.M), "", text)
     text = localesub("'''", "", text)
     text = localesub("''", "", text)
     text = localesub("=== (.+?) ===", r"\1", text)
