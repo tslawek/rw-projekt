@@ -1,2 +1,7 @@
 *.pyc
+*.swo
+*.swp
+*.swn
+\\
+wikipedia2.txt
 wikipedia.txt

@@ -1,0 +1,135 @@
+"""
+    n słów wczesniej [ słowo ]  n słów dalej
+    od    początek, koniec zdania, do
+    warunki co do gramatyki (clp)
+    negacja warunków
+
+    kazdy warunek (predykat) musi czegoś dotyczyć (miejsca)
+    
+        porównać do konkretnego stringa,
+        należy do zbioru z clp
+    
+        słowo w dowolnej odmianie, albo konkretny przypadek.
+"""
+
+class SinglePredicate(object):
+    def __or__(self, other):
+        return Or(self, other)
+    def __and__(self, other):
+        return And(self, other)
+    def __invert__(self):
+        return Not(self)
+class WordAnyForm(SinglePredicate):
+    def __init__(self, target):
+        pass
+    def match(self):
+        pass
+class FormCheck(SinglePredicate):
+    def __init__(self, form_prefix):
+        self.form_prefix = form_prefix
+    def match(self, word):
+        return clpize(word).form.startswith(self.form_prefix)
+class ExactWord(SinglePredicate):
+    def __init__(self, word):
+        self.word = word
+    def match(self, word):
+        return self.word == word
+class Not(SinglePredicate):
+    def __init__(self, pred):
+        self.pred = pred
+    def match(self, word):
+        return not self.pred.match(word)
+def LogicalPair(relation):
+    class Logical(SinglePredicate):
+        def __init__(self, pred1, pred2):
+            self.pred1, self.pred2 = pred1, pred2
+        def match(self, word):
+            return relation(self.pred1.match(word), (self.pred2.match(word)))
+    return Logical
+Or = LogicalPair(lambda a, b: a or b)
+And = LogicalPair(lambda a, b: a and b)
+
+def test_single_predicate():
+    assert ExactWord("ala").match("ala")
+    assert not ExactWord("ala").match("dala")
+
+
+
+class MultiPredicate(object):
+    pass
+class Verbatim(MultiPredicate):
+    def __init__(self, target):
+        self.target = target
+    def match_words(self, words):
+        return self.target in " ".join(words)
+class AnyWord(MultiPredicate):
+    def __init__(self, pred):
+        self.pred = pred
+    def match_words(self, words):
+        return any(pred.match(word) for word in words)
+class AllWords(MultiPredicate):
+    def __init__(self, pred):
+        self.pred = pred
+    def match_words(self, words):
+        return all(pred.match(word) for word in words)
+
+
+
+
+class Scope(object):
+    pass
+class Before(Scope):
+    def __init__(self, n):
+        self.n = n
+    def narrow(self, context):
+        range = min(len(context[0]), self.n)
+        return context[0][-range:]
+ALLBEFORE = Before(float("infinity"))
+class After(Scope):
+    def __init__(self, n):
+        self.n = n
+    def narrow(self, context):
+        range = min(len(context[2]), self.n)
+        return context[0][:range]
+ALLAFTER = After(float("infinity"))
+class Itself(Scope):
+    def narrow(self, context):
+        return [context[1]]
+
+
+no_nouns = AllWords(~FormCheck("A"))
+specific_word = Verbatim("brazylijska")
+specific_expression = Verbatim("ma kota")
+includes_brazilian = AnyWord(WordAnyForm("brazylijska"))
+specific_words = AnyWord(ExactWord("brazylijska") | ExactWord("kolumbijska") | ExactWord("francuska"))
+
+class Placed(object):
+    def __init__(self, scope, multipred):
+        self.scope = scope
+        self.pred = multipred
+    def match_word_in_sentence(self, words, n):
+        to_examine = scope.narrow((words[:n], words[n], words[n:]))
+        return self.pred.match_words(to_examine)
+    def __and__(self, other):
+        return CAAnd(self, other)
+    def __or__(self, other):
+        return CAOr(self, other)
+    def __invert__(self):
+        return CANot(self)
+class CANot(object):
+    def __init__(self, ca):
+        self.ca = ca
+    def match_word_in_sentence(self, words, n):
+        return not self.ca.match_word_in_sentence(words, n)
+def CALogical(operator):
+    class ContextAwareOperator(object):
+        def __init__(self, ca1, ca2):
+            self.ca1, self.ca2 = ca1, ca2
+        def match_word_in_sentence(self, words, n):
+            return operator(self.ca1.match_word_in_sentence(words, n), self.ca2.match_word_in_sentence(words, n))
+    return ContextAwareOperator
+CAAnd = CALogical(lambda x, y: a and y)
+CAOr = CALogical(lambda x, y: a or y)
+
+adj_bef_and_noun_aft       = Placed(ALLBEFORE, AnyWord(FormCheck("C"))) & Placed(ALLAFTER, AnyWord(FormCheck("A")))
+adj_bef_and_noun_immid_aft = Placed(ALLBEFORE, AnyWord(FormCheck("C"))) & Placed(After(1), AnyWord(FormCheck("A")))
