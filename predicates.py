@@ -1,4 +1,14 @@
 #encoding=utf-8
+
+from clp.wrapper import *
+
+
+def test_clp():
+	w = Wrapper("clp/lib/libclp.so")
+	assert "zamku" in w.all_forms("zamek")
+
+
+
 """
     n słów wczesniej [ słowo ]  n słów dalej
     od    początek, koniec zdania, do
@@ -51,26 +61,39 @@ Combinable._set_operators(And, Or, Not)
 class SinglePredicate(Combinable): pass
 class WordAnyForm(SinglePredicate):
     def __init__(self, target):
-        pass
-    def match(self):
-        raise NotImplementedError()
+	self.target = target
+        self.w = Wrapper("clp/lib/libclp.so")
+    def match(self, word):
+        return word in self.w.all_forms(self.target)
 class FormCheck(SinglePredicate):
     def __init__(self, form_prefix):
         self.form_prefix = form_prefix
+        self.w = Wrapper("clp/lib/libclp.so")
     def match(self, word):
-        raise NotImplementedError()
+
+        clp_list = self.w.rec(word)
+        if len(clp_list) > 0:
+            for id in clp_list:
+	        if self.w.label(id)[0] in self.form_prefix:
+		    return True
+	return False
+
 class StartingWith(SinglePredicate):
     def __init__(self, prefix):
         self.prefix = prefix
     def match(self, word):
         return word.startswith(self.prefix)
+class Capitalized(SinglePredicate):
+    def match(self, word):
+        return word and word[0].isupper()
 class ExactWord(SinglePredicate):
     def __init__(self, word):
         self.word = word
     def match(self, word):
         return self.word == word
-
+CAPITALIZED = Capitalized()
 def test_single_predicate():
+
     assert ExactWord("ala").match("ala")
     assert not ExactWord("ala").match("dala")
     assert StartingWith("pre").match("predefiniowac")
@@ -80,8 +103,8 @@ def test_single_predicate():
     assert not (ExactWord("ala") & ExactWord("ola")).match("ala")
     assert (ExactWord("ala") | ExactWord("ola")).match("ala")
     assert (ExactWord("ala") | ExactWord("ola")).match("ola")
-
-# MultiPredicates ###########################################
+    assert WordAnyForm("zamek").match("zamku")
+    assert FormCheck("A").match("dom")
 
 class MultiPredicate(Combinable): pass
 class Verbatim(MultiPredicate):
