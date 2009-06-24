@@ -2,16 +2,19 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Przetwarzanie danych z Wikipedii's documentation!
-============================================================
+Przetwarzanie danych z Wikipedii
+================================
 
-Contents:
+Zawartość:
 
 .. toctree::
    :maxdepth: 2
 
-Indices and tables
-==================
+   dumping_and_converting
+   predicates
+
+Tabele i indeksy
+================
 
 * :ref:`genindex`
 * :ref:`modindex`
