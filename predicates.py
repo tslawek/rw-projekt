@@ -112,34 +112,29 @@ def test_multipred():
 
 # Scopes ###########################################
 
-class Scope(object): pass
-class Before(Scope):
-    def __init__(self, n):
-        self.n = n
-    def narrow(self, context):
-        range = min(len(context[0]), self.n)
+def Before(n):
+    def narrow(context):
+        range = min(len(context[0]), n)
         return context[0][-range:]
-class After(Scope):
-    def __init__(self, n):
-        self.n = n
-    def narrow(self, context):
-        range = min(len(context[2]), self.n)
+    return narrow
+def After(n):
+    def narrow(context):
+        range = min(len(context[2]), n)
         return context[2][:range]
-class Itself(Scope):
-    def narrow(self, context):
-        return [context[1]]
+    return narrow
+def ITSELF(context):
+    return [context[1]]
 ALLBEFORE = Before(float("infinity"))
 ALLAFTER = After(float("infinity"))
-ITSELF = Itself()
 
 def test_scope():
     sentence = "a b c d e".split()
     context = sentence[:2], sentence[2], sentence[3:]
-    assert ALLBEFORE.narrow(context) == ["a", "b"]
-    assert Before(1).narrow(context) == ["b"]
-    assert ITSELF.narrow(context) == ["c"]
-    assert After(1).narrow(context) == ["d"]
-    assert ALLAFTER.narrow(context) == ["d", "e"]
+    assert ALLBEFORE(context) == ["a", "b"]
+    assert Before(1)(context) == ["b"]
+    assert ITSELF(context) == ["c"]
+    assert After(1)(context) == ["d"]
+    assert ALLAFTER(context) == ["d", "e"]
 
 
 no_nouns = AllWords(~FormCheck("A"))
@@ -155,7 +150,7 @@ class Placed(Combinable):
         self.scope = scope
         self.pred = multipred
     def match(self, words, n):
-        to_examine = self.scope.narrow((words[:n], words[n], words[n + 1:]))
+        to_examine = self.scope((words[:n], words[n], words[n + 1:]))
         return self.pred.match(to_examine)
 
 adj_bef_and_noun_aft       = Placed(ALLBEFORE, AnyWord(FormCheck("C"))) & Placed(ALLAFTER, AnyWord(FormCheck("A")))
