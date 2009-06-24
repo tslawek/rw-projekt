@@ -24,7 +24,8 @@ def test_sentence_split():
 	assert sentence_split("Adam M. jest skoczkiem.") == ["Adam M. jest skoczkiem"]
 
 if __name__ == '__main__':
-	matcher = 	Placed(Before(2), AnyWord(ExactWord("aktorka"))) & ~Placed(After(2), AnyWord(ExactWord("filmowa")))
+#	matcher = 	Placed(Before(2), AnyWord(ExactWord("aktorka"))) & ~Placed(After(2), AnyWord(ExactWord("filmowa")))
+	matcher = Placed(Before(1),  AnyWord(CAPITALIZED) ) &  Placed( After(1), AnyWord(StartingWith("(ur.") ))
 	for i in s():
 		ret =  find(matcher, i)
 		if ret != []:
