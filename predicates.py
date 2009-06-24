@@ -12,31 +12,43 @@
     
         słowo w dowolnej odmianie, albo konkretny przypadek.
 """
-_or = lambda a, b: a or b
-_and = lambda a, b: a and b
 
-class SinglePredicate(object):
+# Combinable ###########################################
+class Combinable(object):
     def __or__(self, other):
-        return Or(self, other)
+        return self.or_(self, other)
     def __and__(self, other):
-        return And(self, other)
+        return self.and_(self, other)
     def __invert__(self):
-        return Not(self)
-class Not(SinglePredicate):
+        return self.not_(self)
+    @classmethod
+    def _set_operators(cls, and_, or_, not_):
+        cls.and_ = and_
+        cls.or_ = or_
+        cls.not_ = not_
+def Combine(relation):
+    class Combined(Combinable):
+        def __init__(self, a, b):
+            self.a, self.b = a, b
+            type_a = type(a) if not isinstance(a, Combined) else a._type
+            type_b = type(b) if not isinstance(b, Combined) else b._type
+            assert type_a is type_b
+            self._type = type_a
+        def match(self, *args):
+            return relation(self.a.match(*args), (self.b.match(*args)))
+    return Combined
+class Not(Combinable):
     def __init__(self, pred):
         self.pred = pred
-    def match(self, word):
-        return not self.pred.match(word)
-def LogicalPair(relation):
-    class Logical(SinglePredicate):
-        def __init__(self, pred1, pred2):
-            self.pred1, self.pred2 = pred1, pred2
-        def match(self, word):
-            return relation(self.pred1.match(word), (self.pred2.match(word)))
-    return Logical
-Or = LogicalPair(_or)
-And = LogicalPair(_and)
+    def match(self, *args):
+        return not self.pred.match(*args)
+Or = Combine(lambda a, b: a or b)
+And = Combine(lambda a, b: a and b)
+Combinable._set_operators(And, Or, Not)
 
+
+# SinglePredicates ###########################################
+class SinglePredicate(Combinable): pass
 class WordAnyForm(SinglePredicate):
     def __init__(self, target):
         pass
@@ -69,24 +81,24 @@ def test_single_predicate():
     assert (ExactWord("ala") | ExactWord("ola")).match("ala")
     assert (ExactWord("ala") | ExactWord("ola")).match("ola")
 
+# MultiPredicates ###########################################
 
-
-class MultiPredicate(object): pass
+class MultiPredicate(Combinable): pass
 class Verbatim(MultiPredicate):
     def __init__(self, target):
         self.target = target
-    def match_words(self, words):
+    def match(self, words):
         return self.target in " ".join(words)
 class AnyWord(MultiPredicate):
     def __init__(self, pred):
         self.pred = pred
-    def match_words(self, words):
+    def match(self, words):
         return any(self.pred.match(word) for word in words)
 def Collect(manner):
     class Collector(MultiPredicate):
         def __init__(self, pred):
             self.pred = pred
-        def match_words(self, words):
+        def match(self, words):
             return manner(self.pred.match(word) for word in words)
     return Collector
 AnyWord = Collect(any)
@@ -94,12 +106,11 @@ AllWords = Collect(all)
 
 def test_multipred():
     words = "ala ma kota".split()
-    assert AnyWord(ExactWord("ala")).match_words(words)
-    assert not AnyWord(ExactWord("ola")).match_words(words)
-    assert AllWords(~(ExactWord("ola"))).match_words(words)
+    assert AnyWord(ExactWord("ala")).match(words)
+    assert not AnyWord(ExactWord("ola")).match(words)
+    assert AllWords(~(ExactWord("ola"))).match(words)
 
-
-
+# Scopes ###########################################
 
 class Scope(object): pass
 class Before(Scope):
@@ -137,33 +148,15 @@ specific_expression = Verbatim("ma kota")
 includes_brazilian = AnyWord(WordAnyForm("brazylijska"))
 specific_words = AnyWord(ExactWord("brazylijska") | ExactWord("kolumbijska") | ExactWord("francuska"))
 
-class Placed(object):
+# Placed Predicate ###########################################
+
+class Placed(Combinable):
     def __init__(self, scope, multipred):
         self.scope = scope
         self.pred = multipred
-    def match_word_in_sentence(self, words, n):
+    def match(self, words, n):
         to_examine = self.scope.narrow((words[:n], words[n], words[n + 1:]))
-        return self.pred.match_words(to_examine)
-    def __and__(self, other):
-        return PlacedAnd(self, other)
-    def __or__(self, other):
-        return PlacedOr(self, other)
-    def __invert__(self):
-        return PlacedNot(self)
-class PlacedNot(object):
-    def __init__(self, ca):
-        self.ca = ca
-    def match_word_in_sentence(self, words, n):
-        return not self.ca.match_word_in_sentence(words, n)
-def PlacedLogical(oper):
-    class ContextAwareOperator(object):
-        def __init__(self, ca1, ca2):
-            self.ca1, self.ca2 = ca1, ca2
-        def match_word_in_sentence(self, words, n):
-            return oper(self.ca1.match_word_in_sentence(words, n), self.ca2.match_word_in_sentence(words, n))
-    return ContextAwareOperator
-PlacedAnd = PlacedLogical(_and)
-PlacedOr = PlacedLogical(_or)
+        return self.pred.match(to_examine)
 
 adj_bef_and_noun_aft       = Placed(ALLBEFORE, AnyWord(FormCheck("C"))) & Placed(ALLAFTER, AnyWord(FormCheck("A")))
 adj_bef_and_noun_immid_aft = Placed(ALLBEFORE, AnyWord(FormCheck("C"))) & Placed(After(1), AnyWord(FormCheck("A")))
@@ -171,19 +164,19 @@ adj_bef_and_noun_immid_aft = Placed(ALLBEFORE, AnyWord(FormCheck("C"))) & Placed
 def test_placed():
     words = "ala ma kota".split()
     matcher = Placed(ALLBEFORE, AnyWord(ExactWord("ala")))
-    assert not matcher.match_word_in_sentence(words, 0)
-    assert matcher.match_word_in_sentence(words, 1)
-    assert matcher.match_word_in_sentence(words, 2)
+    assert not matcher.match(words, 0)
+    assert matcher.match(words, 1)
+    assert matcher.match(words, 2)
 
     matcher = Placed(ALLBEFORE, AnyWord(ExactWord("ala"))) & Placed(ALLAFTER, AnyWord(ExactWord("kota")))
-    assert not matcher.match_word_in_sentence(words, 0)
-    assert matcher.match_word_in_sentence(words, 1)
+    assert not matcher.match(words, 0)
+    assert matcher.match(words, 1)
 
 def find(matcher, sentence):
     words = sentence.split()
     result = []
     for n in range(len(words)):
-        if matcher.match_word_in_sentence(words, n):
+        if matcher.match(words, n):
             result.append(words[n])
     return result
 
